@@ -1,0 +1,9 @@
+flask
+pandas
+numpy
+scikit-learn
+xgboost
+requests
+beautifulsoup4
+python-whois
+shap

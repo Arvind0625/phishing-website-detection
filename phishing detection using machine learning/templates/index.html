@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Phishing Risk Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+<div class="container">
+<h1>🔐 Intelligent Phishing Risk Analyzer</h1>
+
+<form action="/predict" method="POST">
+    <input type="text"
+           name="url"
+           placeholder="Enter URL"
+           value="{{ url if url else '' }}"
+           required>
+    <button type="submit">Analyze</button>
+</form>
+
+{% if risk is defined %}
+<div class="dashboard">
+
+    <!-- RISK SCORE -->
+    <div class="card risk-score">
+        <h3>[ RISK SCORE ]</h3>
+        <div class="risk-circle" id="riskCircle" data-risk="{{ risk }}">
+            <div class="risk-inner">
+                <span class="risk-value">{{ risk|int }}%</span>
+                <p class="risk-label">RISK SCORE</p>
+            </div>
+        </div> 
+        <p class="trust-status">{{ trust_status }}</p>
+        <p class="risk-level">{{ level }}</p>
+    </div>
+
+    <!-- WEBSITE INFO -->
+    <div class="card website-info">
+        <h3>[ WEBSITE INFO ]</h3>
+
+        <p><b>Title:</b> {{ title }}</p>
+        <p><b>Description:</b> {{ description }}</p>
+        <p><b>Domain:</b> {{ domain }}</p>
+        <p><b>Domain Age:</b> {{ domain_age }}</p>
+        <p><b>SSL Certificate:</b> {{ ssl_status }}</p>
+    </div>
+
+
+    <!-- RISK INDICATORS -->
+    <div class="card indicators">
+        <h3>[ RISK INDICATORS ]</h3>
+
+        {% if explanation %}
+            {% for item in explanation %}
+                <p>{{ item[0] }}</p>
+            {% endfor %}
+        {% else %}
+            <p>No major indicators detected</p>
+        {% endif %}
+    </div>
+
+    <!-- SERVER INFO -->
+    <div class="card server-info">
+        <h3>[ SERVER INFO ]</h3>
+
+        {% if ip %}
+            <p>IP Address: {{ ip }}</p>
+
+            {% if location %}
+                <p>Country: {{ location.country }}</p>
+                <p>City: {{ location.city }}</p>
+                <p>ISP: {{ location.isp }}</p>
+                <p>Organization: {{ location.org }}</p>
+            {% endif %}
+        {% else %}
+            <p>Server information unavailable</p>
+        {% endif %}
+    </div>
+
+</div>
+{% endif %}
+</div>
+</body>
+<script>
+const circle = document.getElementById("riskCircle");
+if(circle){
+    let risk = parseFloat(circle.dataset.risk);
+    if(risk > 100){
+        risk = 100;
+    }
+    let color = "#22c55e"; // green
+
+    if(risk >= 70){
+        color = "#ef4444"; // red
+    }
+    else if(risk >= 30){
+        color = "#facc15"; // yellow
+    }
+    circle.style.background =
+        `conic-gradient(${color} ${risk}%, rgba(255,255,255,0.08) ${risk}%)`;
+}
+
+</script>
+</html>
